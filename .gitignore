@@ -2,6 +2,4 @@
 __pycache__/
 
 venv/
-
-bulk_import.py
 sample_data.json

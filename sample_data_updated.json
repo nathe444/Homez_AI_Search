@@ -1,0 +1,383 @@
+{
+  "products": [
+    {
+      "id": "prod001",
+      "name": "Dangote Premium Cement 50kg",
+      "barcode": "6001010101011",
+      "description": "High-quality Portland cement for residential and commercial construction. Ideal for concrete mixing, block making, and plastering.",
+      "basePrice": 4800,
+      "categoryName": "Construction Materials",
+      "brand": "Dangote",
+      "tags": [
+        "construction",
+        "cement",
+        "building",
+        "material",
+        "concrete",
+        "plastering"
+      ],
+      "variants": [
+        {
+          "id": "var001",
+          "sku": "DC-50KG",
+          "price": 4800,
+          "stock": 150,
+          "attributes": [
+            {
+              "id": "attr001",
+              "templateId": "tmpl001",
+              "name": "weight",
+              "dataType": "number",
+              "numberValue": 50
+            },
+            {
+              "id": "attr002",
+              "templateId": "tmpl002",
+              "name": "type",
+              "dataType": "string",
+              "stringValue": "Portland Cement"
+            }
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "id": "attr_prod_001",
+          "templateId": null,
+          "name": "origin",
+          "dataType": "string",
+          "stringValue": "Nigeria"
+        },
+        {
+          "id": "attr_prod_002",
+          "templateId": null,
+          "name": "manufacturer",
+          "dataType": "string",
+          "stringValue": "Dangote Cement Plc"
+        },
+        {
+          "id": "attr_prod_003",
+          "templateId": null,
+          "name": "strength_grade",
+          "dataType": "string",
+          "stringValue": "42.5R"
+        }
+      ]
+    },
+    {
+      "id": "prod002",
+      "name": "Holcim Concrete Mixer 200L",
+      "barcode": "7610345678901",
+      "description": "Heavy-duty 200-liter concrete mixer with 2HP motor. Perfect for construction sites and large projects.",
+      "basePrice": 145000,
+      "categoryName": "Construction Equipment",
+      "brand": "Holcim",
+      "tags": [
+        "construction",
+        "equipment",
+        "concrete",
+        "mixer",
+        "tools"
+      ],
+      "variants": [
+        {
+          "id": "var002",
+          "sku": "HCM-200L",
+          "price": 145000,
+          "stock": 12,
+          "attributes": [
+            {
+              "id": "attr003",
+              "templateId": "tmpl003",
+              "name": "capacity",
+              "dataType": "number",
+              "numberValue": 200
+            },
+            {
+              "id": "attr004",
+              "templateId": "tmpl004",
+              "name": "power",
+              "dataType": "string",
+              "stringValue": "2HP Motor"
+            }
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "id": "attr_prod_004",
+          "templateId": null,
+          "name": "warranty",
+          "dataType": "string",
+          "stringValue": "2 years"
+        },
+        {
+          "id": "attr_prod_005",
+          "templateId": null,
+          "name": "origin",
+          "dataType": "string",
+          "stringValue": "Switzerland"
+        },
+        {
+          "id": "attr_prod_006",
+          "templateId": null,
+          "name": "drum_speed",
+          "dataType": "string",
+          "stringValue": "28 rpm"
+        }
+      ]
+    },
+    {
+      "id": "prod003",
+      "name": "Sherwin-Williams Premium Paint Brush Set",
+      "barcode": "0764501234567",
+      "description": "Professional quality 12-piece paint brush set with synthetic bristles for smooth application.",
+      "basePrice": 7200,
+      "categoryName": "Painting Supplies",
+      "brand": "Sherwin-Williams",
+      "tags": [
+        "painting",
+        "supplies",
+        "brushes",
+        "tools",
+        "interior"
+      ],
+      "variants": [
+        {
+          "id": "var003",
+          "sku": "PB-SET-12",
+          "price": 7200,
+          "stock": 45,
+          "attributes": [
+            {
+              "id": "attr005",
+              "templateId": "tmpl005",
+              "name": "pieces",
+              "dataType": "number",
+              "numberValue": 12
+            },
+            {
+              "id": "attr006",
+              "templateId": "tmpl006",
+              "name": "material",
+              "dataType": "string",
+              "stringValue": "Synthetic bristles"
+            }
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "id": "attr_prod_007",
+          "templateId": null,
+          "name": "bristle_type",
+          "dataType": "string",
+          "stringValue": "Synthetic"
+        },
+        {
+          "id": "attr_prod_008",
+          "templateId": null,
+          "name": "handle_material",
+          "dataType": "string",
+          "stringValue": "Wood"
+        },
+        {
+          "id": "attr_prod_009",
+          "templateId": null,
+          "name": "set_type",
+          "dataType": "string",
+          "stringValue": "Professional"
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "id": "serv001",
+      "name": "Construction Consultation",
+      "description": "Professional construction planning and consultation services for residential and commercial projects.",
+      "basePrice": 15000,
+      "categoryName": "Professional Services",
+      "tags": [
+        "construction",
+        "consultation",
+        "planning",
+        "professional"
+      ],
+      "packages": [
+        {
+          "id": "pkg001",
+          "name": "Basic Consultation",
+          "price": 15000,
+          "description": "Initial site assessment and basic planning for small projects",
+          "attributes": [
+            {
+              "id": "attr021",
+              "templateId": "tmpl021",
+              "name": "duration",
+              "dataType": "string",
+              "stringValue": "2 hours"
+            },
+            {
+              "id": "attr022",
+              "templateId": "tmpl022",
+              "name": "deliverables",
+              "dataType": "string",
+              "stringValue": "Site report and recommendations"
+            }
+          ]
+        },
+        {
+          "id": "pkg002",
+          "name": "Comprehensive Consultation",
+          "price": 35000,
+          "description": "Detailed site analysis, structural planning and budget estimation",
+          "attributes": [
+            {
+              "id": "attr023",
+              "templateId": "tmpl023",
+              "name": "duration",
+              "dataType": "string",
+              "stringValue": "4-6 hours"
+            },
+            {
+              "id": "attr024",
+              "templateId": "tmpl024",
+              "name": "deliverables",
+              "dataType": "string",
+              "stringValue": "Detailed report, plans and cost estimation"
+            }
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "id": "attr_serv_001",
+          "templateId": null,
+          "name": "certified",
+          "dataType": "boolean",
+          "booleanValue": true
+        },
+        {
+          "id": "attr_serv_002",
+          "templateId": null,
+          "name": "experience",
+          "dataType": "string",
+          "stringValue": "10 years"
+        },
+        {
+          "id": "attr_serv_003",
+          "templateId": null,
+          "name": "projects_completed",
+          "dataType": "number",
+          "numberValue": 500
+        }
+      ]
+    },
+    {
+      "id": "serv002",
+      "name": "Interior Design",
+      "description": "Complete interior design services for residential and commercial spaces with 3D visualization.",
+      "basePrice": 50000,
+      "categoryName": "Design Services",
+      "tags": [
+        "design",
+        "interior",
+        "decor",
+        "planning",
+        "3d_visualization"
+      ],
+      "packages": [
+        {
+          "id": "pkg003",
+          "name": "Basic Package",
+          "price": 50000,
+          "description": "Design consultation and basic layout planning for spaces up to 100 sq.m",
+          "attributes": [
+            {
+              "id": "attr025",
+              "templateId": "tmpl025",
+              "name": "coverage",
+              "dataType": "string",
+              "stringValue": "Up to 100 sq.m"
+            },
+            {
+              "id": "attr026",
+              "templateId": "tmpl026",
+              "name": "deliverables",
+              "dataType": "string",
+              "stringValue": "Layout plan, mood board"
+            }
+          ]
+        },
+        {
+          "id": "pkg004",
+          "name": "Premium Package",
+          "price": 150000,
+          "description": "Complete design service including 3D visualization for spaces up to 200 sq.m",
+          "attributes": [
+            {
+              "id": "attr027",
+              "templateId": "tmpl027",
+              "name": "coverage",
+              "dataType": "string",
+              "stringValue": "Up to 200 sq.m"
+            },
+            {
+              "id": "attr028",
+              "templateId": "tmpl028",
+              "name": "deliverables",
+              "dataType": "string",
+              "stringValue": "Layout plan, mood board, 3D visualization"
+            }
+          ]
+        },
+        {
+          "id": "pkg005",
+          "name": "Luxury Package",
+          "price": 300000,
+          "description": "Full-service luxury design with material sourcing and project management",
+          "attributes": [
+            {
+              "id": "attr029",
+              "templateId": "tmpl029",
+              "name": "coverage",
+              "dataType": "string",
+              "stringValue": "Unlimited"
+            },
+            {
+              "id": "attr030",
+              "templateId": "tmpl030",
+              "name": "deliverables",
+              "dataType": "string",
+              "stringValue": "Complete design package with sourcing and management"
+            }
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "id": "attr_serv_004",
+          "templateId": null,
+          "name": "portfolio",
+          "dataType": "string",
+          "stringValue": "Available on request"
+        },
+        {
+          "id": "attr_serv_005",
+          "templateId": null,
+          "name": "styles",
+          "dataType": "string",
+          "stringValue": "modern, traditional, minimalist, industrial"
+        },
+        {
+          "id": "attr_serv_006",
+          "templateId": null,
+          "name": "designers",
+          "dataType": "number",
+          "numberValue": 5
+        }
+      ]
+    }
+  ]
+}

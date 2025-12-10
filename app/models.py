@@ -55,7 +55,7 @@ class Product(BaseModel):
     brand: Optional[str] = None
     tags: Optional[List[str]] = []
     variants: Optional[List[Variant]] = []
-    metadata: Optional[Dict[str, Any]] = {}
+    attributes: Optional[List[VariantAttribute]] = []
 
 class Service(BaseModel):
     id: str
@@ -65,4 +65,4 @@ class Service(BaseModel):
     categoryName: str
     tags: Optional[List[str]] = []
     packages: Optional[List[Package]] = []
-    metadata: Optional[Dict[str, Any]] = {}
+    attributes: Optional[List[PackageAttribute]] = []

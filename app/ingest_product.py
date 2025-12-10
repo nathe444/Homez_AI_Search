@@ -28,7 +28,7 @@ async def ingest_product(product: Product):
     # Store product JSON in DB
     async with pool.acquire() as conn:
         await conn.execute("""
-            INSERT INTO products (id, name, barcode, description, basePrice, categoryName, brand, tags, variants, metadata)
+            INSERT INTO products (id, name, barcode, description, basePrice, categoryName, brand, tags, variants, attributes)
             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
             ON CONFLICT (id) DO UPDATE SET
                 name=EXCLUDED.name,
@@ -39,7 +39,7 @@ async def ingest_product(product: Product):
                 brand=EXCLUDED.brand,
                 tags=EXCLUDED.tags,
                 variants=EXCLUDED.variants,
-                metadata=EXCLUDED.metadata
+                attributes=EXCLUDED.attributes
         """,
         product_id,
         product.name,
@@ -50,7 +50,7 @@ async def ingest_product(product: Product):
         product.brand,
         json.dumps(product.tags or []),
         json.dumps([v.dict() for v in product.variants] or []),
-        json.dumps(product.metadata or {})
+        json.dumps([a.dict() for a in product.attributes] or [])
         )
 
     # Build a unified text containing all relevant product information
@@ -64,6 +64,12 @@ async def ingest_product(product: Product):
         if attr_text:
             v_parts.append(" | ".join(attr_text))
         variants_text += " | ".join(v_parts) + "\n"
+    
+    # Format product attributes
+    product_attributes_text = ""
+    for a in product.attributes:
+        val = a.stringValue or a.numberValue or a.booleanValue or a.dateValue or ""
+        product_attributes_text += f"{a.name}: {val}\n"
 
     full_text = f"""
 Name: {product.name}
@@ -74,7 +80,8 @@ Brand: {product.brand}
 Tags: {', '.join(product.tags or [])}
 Variants:
 {variants_text}
-Metadata: {json.dumps(product.metadata or {})}
+Product Attributes:
+{product_attributes_text}
 """
 
     # Generate a single embedding for the entire product

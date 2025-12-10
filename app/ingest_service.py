@@ -28,7 +28,7 @@ async def ingest_service(service: Service):
     # Store service JSON in DB
     async with pool.acquire() as conn:
         await conn.execute("""
-            INSERT INTO services (id, name, description, basePrice, categoryName, tags, packages, metadata)
+            INSERT INTO services (id, name, description, basePrice, categoryName, tags, packages, attributes)
             VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
             ON CONFLICT (id) DO UPDATE SET
                 name=EXCLUDED.name,
@@ -37,7 +37,7 @@ async def ingest_service(service: Service):
                 categoryName=EXCLUDED.categoryName,
                 tags=EXCLUDED.tags,
                 packages=EXCLUDED.packages,
-                metadata=EXCLUDED.metadata
+                attributes=EXCLUDED.attributes
         """,
         service_id,
         service.name,
@@ -46,7 +46,7 @@ async def ingest_service(service: Service):
         service.categoryName,
         json.dumps(service.tags or []),
         json.dumps([p.dict() for p in service.packages] or []),
-        json.dumps(service.metadata or {})
+        json.dumps([a.dict() for a in service.attributes] or [])
         )
 
     # Build a unified text containing all relevant service information
@@ -60,6 +60,12 @@ async def ingest_service(service: Service):
         if attr_text:
             p_parts.append(" | ".join(attr_text))
         packages_text += " | ".join(p_parts) + "\n"
+    
+    # Format service attributes
+    service_attributes_text = ""
+    for a in service.attributes:
+        val = a.stringValue or a.numberValue or a.booleanValue or a.dateValue or ""
+        service_attributes_text += f"{a.name}: {val}\n"
 
     full_text = f"""
 Name: {service.name}
@@ -69,7 +75,8 @@ Category: {service.categoryName}
 Tags: {', '.join(service.tags or [])}
 Packages:
 {packages_text}
-Metadata: {json.dumps(service.metadata or {})}
+Service Attributes:
+{service_attributes_text}
 """
 
     # Generate a single embedding for the entire service

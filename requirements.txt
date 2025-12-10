@@ -6,3 +6,4 @@ pgvector
 langchain-core
 python-dotenv
 sentence-transformers
+aio-pika

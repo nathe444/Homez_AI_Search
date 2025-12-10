@@ -9,6 +9,26 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+def format_product_attributes(attributes):
+    """Format product attributes for embedding text"""
+    if not attributes:
+        return ""
+    attr_text = ""
+    for attr in attributes:
+        val = attr.get('stringValue') or attr.get('numberValue') or attr.get('booleanValue') or attr.get('dateValue') or ""
+        attr_text += f"{attr.get('name', '')}: {val}\n"
+    return attr_text
+
+def format_service_attributes(attributes):
+    """Format service attributes for embedding text"""
+    if not attributes:
+        return ""
+    attr_text = ""
+    for attr in attributes:
+        val = attr.get('stringValue') or attr.get('numberValue') or attr.get('booleanValue') or attr.get('dateValue') or ""
+        attr_text += f"{attr.get('name', '')}: {val}\n"
+    return attr_text
+
 async def insert_products_and_services(json_file_path):
     """Insert products and services from a JSON file"""
     
@@ -63,7 +83,7 @@ async def insert_product(product_data):
     # Store product JSON in DB
     async with db_pool.acquire() as conn:
         await conn.execute("""
-            INSERT INTO products (id, name, barcode, description, basePrice, categoryName, brand, tags, variants, metadata)
+            INSERT INTO products (id, name, barcode, description, basePrice, categoryName, brand, tags, variants, attributes)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             ON CONFLICT (id) DO UPDATE SET
                 name=EXCLUDED.name,
@@ -74,7 +94,7 @@ async def insert_product(product_data):
                 brand=EXCLUDED.brand,
                 tags=EXCLUDED.tags,
                 variants=EXCLUDED.variants,
-                metadata=EXCLUDED.metadata
+                attributes=EXCLUDED.attributes
         """,
         product_id,
         product_data.get('name', ''),
@@ -85,7 +105,7 @@ async def insert_product(product_data):
         product_data.get('brand'),
         json.dumps(product_data.get('tags', [])),
         json.dumps(product_data.get('variants', [])),
-        json.dumps(product_data.get('metadata', {}))
+        json.dumps(product_data.get('attributes', []))
         )
     
     # Build a unified text containing all relevant product information
@@ -109,7 +129,8 @@ Brand: {product_data.get('brand', '')}
 Tags: {', '.join(product_data.get('tags', []))}
 Variants:
 {variants_text}
-Metadata: {json.dumps(product_data.get('metadata', {}))}
+Product Attributes:
+{format_product_attributes(product_data.get('attributes', []))}
 """
 
     # Generate a single embedding for the entire product
@@ -134,7 +155,7 @@ async def insert_service(service_data):
     # Store service JSON in DB
     async with db_pool.acquire() as conn:
         await conn.execute("""
-            INSERT INTO services (id, name, description, basePrice, categoryName, tags, packages, metadata)
+            INSERT INTO services (id, name, description, basePrice, categoryName, tags, packages, attributes)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             ON CONFLICT (id) DO UPDATE SET
                 name=EXCLUDED.name,
@@ -143,7 +164,7 @@ async def insert_service(service_data):
                 categoryName=EXCLUDED.categoryName,
                 tags=EXCLUDED.tags,
                 packages=EXCLUDED.packages,
-                metadata=EXCLUDED.metadata
+                attributes=EXCLUDED.attributes
         """,
         service_id,
         service_data.get('name', ''),
@@ -152,7 +173,7 @@ async def insert_service(service_data):
         service_data.get('categoryName', ''),
         json.dumps(service_data.get('tags', [])),
         json.dumps(service_data.get('packages', [])),
-        json.dumps(service_data.get('metadata', {}))
+        json.dumps(service_data.get('attributes', []))
         )
     
     # Build a unified text containing all relevant service information
@@ -175,7 +196,8 @@ Category: {service_data.get('categoryName', '')}
 Tags: {', '.join(service_data.get('tags', []))}
 Packages:
 {packages_text}
-Metadata: {json.dumps(service_data.get('metadata', {}))}
+Service Attributes:
+{format_service_attributes(service_data.get('attributes', []))}
 """
 
     # Generate a single embedding for the entire service

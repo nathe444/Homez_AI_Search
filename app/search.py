@@ -38,7 +38,7 @@ async def search(query: str = Query(..., description="Search query"),
             SELECT p.*, 1 - (pe.embedding <=> $1) AS score
             FROM product_embeddings pe
             JOIN products p ON pe.product_id = p.id
-            ORDER BY embedding <=> $1
+            ORDER BY 1 - (embedding <=> $1) DESC
             LIMIT $2
         """, query_embedding, limit)
 
@@ -47,7 +47,7 @@ async def search(query: str = Query(..., description="Search query"),
             SELECT s.*, 1 - (se.embedding <=> $1) AS score
             FROM service_embeddings se
             JOIN services s ON se.service_id = s.id
-            ORDER BY embedding <=> $1
+            ORDER BY 1 - (embedding <=> $1) DESC
             LIMIT $2
         """, query_embedding, limit)
 
@@ -66,8 +66,18 @@ async def search(query: str = Query(..., description="Search query"),
             row_dict['tags'] = json.loads(row_dict['tags'])
         if 'variants' in row_dict and isinstance(row_dict['variants'], str):
             row_dict['variants'] = json.loads(row_dict['variants'])
-        if 'metadata' in row_dict and isinstance(row_dict['metadata'], str):
-            row_dict['metadata'] = json.loads(row_dict['metadata'])
+            # Fix variant attributes to include templateId if missing
+            for variant in row_dict['variants']:
+                if 'attributes' in variant and isinstance(variant['attributes'], list):
+                    for attr in variant['attributes']:
+                        if 'templateId' not in attr:
+                            attr['templateId'] = None
+        if 'attributes' in row_dict and isinstance(row_dict['attributes'], str):
+            row_dict['attributes'] = json.loads(row_dict['attributes'])
+            # Fix product attributes to include templateId if missing
+            for attr in row_dict['attributes']:
+                if 'templateId' not in attr:
+                    attr['templateId'] = None
         # Ensure required fields are present
         if 'categoryName' not in row_dict or row_dict['categoryName'] is None:
             row_dict['categoryName'] = 'Unknown'
@@ -91,8 +101,18 @@ async def search(query: str = Query(..., description="Search query"),
             row_dict['tags'] = json.loads(row_dict['tags'])
         if 'packages' in row_dict and isinstance(row_dict['packages'], str):
             row_dict['packages'] = json.loads(row_dict['packages'])
-        if 'metadata' in row_dict and isinstance(row_dict['metadata'], str):
-            row_dict['metadata'] = json.loads(row_dict['metadata'])
+            # Fix package attributes to include templateId if missing
+            for package in row_dict['packages']:
+                if 'attributes' in package and isinstance(package['attributes'], list):
+                    for attr in package['attributes']:
+                        if 'templateId' not in attr:
+                            attr['templateId'] = None
+        if 'attributes' in row_dict and isinstance(row_dict['attributes'], str):
+            row_dict['attributes'] = json.loads(row_dict['attributes'])
+            # Fix service attributes to include templateId if missing
+            for attr in row_dict['attributes']:
+                if 'templateId' not in attr:
+                    attr['templateId'] = None
         # Ensure required fields are present
         if 'categoryName' not in row_dict or row_dict['categoryName'] is None:
             row_dict['categoryName'] = 'Unknown'

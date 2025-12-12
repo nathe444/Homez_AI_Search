@@ -91,28 +91,19 @@ def get_attribute_value(attr):
 
 
 def fix_attribute_data_type(attr):
-    """Ensure attribute has dataType field set correctly"""
-    # Make a copy to avoid modifying the original
-    fixed_attr = attr.copy()
-    
-    # Set templateId if missing
-    if 'templateId' not in fixed_attr:
-        fixed_attr['templateId'] = None
-    
-    # Set dataType if missing
-    if 'dataType' not in fixed_attr:
-        if 'stringValue' in fixed_attr and fixed_attr['stringValue'] is not None:
-            fixed_attr['dataType'] = 'string'
-        elif 'numberValue' in fixed_attr and fixed_attr['numberValue'] is not None:
-            fixed_attr['dataType'] = 'number'
-        elif 'booleanValue' in fixed_attr and fixed_attr['booleanValue'] is not None:
-            fixed_attr['dataType'] = 'boolean'
-        elif 'dateValue' in fixed_attr and fixed_attr['dateValue'] is not None:
-            fixed_attr['dataType'] = 'date'
-        else:
-            fixed_attr['dataType'] = 'string'  # default fallback
-    
-    return fixed_attr
+    """Fix attribute data types for storing in JSON"""
+    attr_type = attr.get('type')
+    if attr_type == 'NUMBER':
+        return convert_to_float(attr.get('value'))
+    elif attr_type == 'INTEGER':
+        return convert_to_int(attr.get('value'))
+    elif attr_type == 'BOOLEAN':
+        return attr.get('value') in ['true', 'True', True]
+    elif attr_type == 'DATE':
+        return attr.get('value')
+    else:
+        return attr.get('value')
+
 
 async def get_db_pool():
     """Get or create database pool"""
@@ -130,6 +121,7 @@ async def get_db_pool():
         )
         logger.info("✅ Database pool created")
     return db_pool
+
 
 async def process_product_data(product_data: Dict[Any, Any]):
     """
@@ -155,6 +147,14 @@ async def process_product_data(product_data: Dict[Any, Any]):
     try:
         # Get database pool
         pool = await get_db_pool()
+        
+        # Check if product already exists
+        async with pool.acquire() as conn:
+            existing_product = await conn.fetchrow("SELECT id FROM products WHERE id = $1", product_id)
+            
+        is_update = existing_product is not None
+        action = "Updating" if is_update else "Creating"
+        logger.info(f"{action} product: {product_id}")
         
         # Fix attributes before storing
         fixed_variants = []
@@ -237,11 +237,13 @@ Product Attributes:
             """, product_id, embedding)
             logger.info(f"Product embedding DB insert result: {result}")
             
-        logger.info(f"✅ Successfully processed product: {product_id}")
+        action_past = "Updated" if is_update else "Created"
+        logger.info(f"✅ Successfully {action_past.lower()} product: {product_id}")
         return True
     except Exception as e:
         logger.error(f"❌ Error processing product {product_id}: {e}", exc_info=True)
         return False
+
 
 async def process_service_data(service_data: Dict[Any, Any]):
     """
@@ -267,6 +269,14 @@ async def process_service_data(service_data: Dict[Any, Any]):
     try:
         # Get database pool
         pool = await get_db_pool()
+        
+        # Check if service already exists
+        async with pool.acquire() as conn:
+            existing_service = await conn.fetchrow("SELECT id FROM services WHERE id = $1", service_id)
+            
+        is_update = existing_service is not None
+        action = "Updating" if is_update else "Creating"
+        logger.info(f"{action} service: {service_id}")
         
         # Fix attributes before storing
         fixed_packages = []
@@ -344,11 +354,13 @@ Service Attributes:
             """, service_id, embedding)
             logger.info(f"Service embedding DB insert result: {result}")
             
-        logger.info(f"✅ Successfully processed service: {service_id}")
+        action_past = "Updated" if is_update else "Created"
+        logger.info(f"✅ Successfully {action_past.lower()} service: {service_id}")
         return True
     except Exception as e:
         logger.error(f"❌ Error processing service {service_id}: {e}", exc_info=True)
         return False
+
 
 async def process_product_message(message: aio_pika.IncomingMessage):
     """Process a product message from RabbitMQ"""
@@ -359,8 +371,11 @@ async def process_product_message(message: aio_pika.IncomingMessage):
         
         # Parse the product data
         response = json.loads(raw_body)
-        product_data = response.get('data', {})
-        logger.info(f"📥 Parsed product message: {product_data.get('id', 'Unknown')}")
+        # product_data = response.get('data', {})
+        # logger.info(f"📥 Parsed product message: {product_data.get('id', 'Unknown')}")
+
+        product_data = json.loads(raw_body)
+        logger.info(f"📥 Parsed product message: {product_data}")
         
         # Process the product data
         success = await process_product_data(product_data)
@@ -383,6 +398,7 @@ async def process_product_message(message: aio_pika.IncomingMessage):
         # Reject and requeue the message so it can be retried
         await message.nack(requeue=True)
 
+
 async def process_service_message(message: aio_pika.IncomingMessage):
     """Process a service message from RabbitMQ"""
     try:
@@ -392,8 +408,11 @@ async def process_service_message(message: aio_pika.IncomingMessage):
         
         # Parse the service data
         response = json.loads(raw_body)
-        service_data = response.get('data', {})
-        logger.info(f"📥 Parsed service message: {service_data.get('id', 'Unknown')}")
+        # service_data = response.get('data', {})
+        # logger.info(f"📥 Parsed service message: {service_data.get('id', 'Unknown')}")
+
+        service_data = json.loads(raw_body)
+        logger.info(f"📥 Parsed service message: {service_data}")
         
         # Process the service data
         success = await process_service_data(service_data)
@@ -416,10 +435,12 @@ async def process_service_message(message: aio_pika.IncomingMessage):
         # Reject and requeue the message so it can be retried
         await message.nack(requeue=True)
 
+
 def signal_handler(signum, frame):
     """Handle shutdown signals"""
     logger.info("🛑 Received shutdown signal")
     shutdown_event.set()
+
 
 async def consume_products():
     """Consume product messages from RabbitMQ"""
@@ -461,6 +482,7 @@ async def consume_products():
     await connection.close()
     logger.info("📦 Product consumer connection closed")
 
+
 async def consume_services():
     """Consume service messages from RabbitMQ"""
     logger.info(f"🔌 Connecting to RabbitMQ at {RABBITMQ_HOST}:{RABBITMQ_PORT}")
@@ -501,6 +523,7 @@ async def consume_services():
     await connection.close()
     logger.info("🛠️ Service consumer connection closed")
 
+
 async def main():
     """Main function to run both consumers"""
     logger.info("🚀 Starting RabbitMQ Consumer")
@@ -531,6 +554,7 @@ async def main():
         logger.info("🔄 Tasks cancelled")
     finally:
         logger.info("🛑 Consumer stopped")
+
 
 if __name__ == "__main__":
     try:

@@ -370,6 +370,7 @@ async def process_product_message(message: aio_pika.IncomingMessage):
         
         # Parse the product data
         response = json.loads(raw_body)
+        # product_data = response
         product_data = response.get('data', {})
         logger.info(f"📥 Parsed product message: {product_data.get('id', 'Unknown')}")
 
@@ -404,6 +405,8 @@ async def process_service_message(message: aio_pika.IncomingMessage):
         
         # Parse the service data
         response = json.loads(raw_body)
+        # service_data = response
+
         service_data = response.get('data', {})
         logger.info(f"📥 Parsed service message: {service_data.get('id', 'Unknown')}")
         
